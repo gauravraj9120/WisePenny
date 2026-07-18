@@ -1,0 +1,10 @@
+{
+  "name": "wisepenny-root",
+  "version": "1.0.0",
+  "description": "WisePenny AI-Powered Expense Tracker",
+  "scripts": {
+    "start": "node start.js",
+    "setup": "node setup.js"
+  },
+  "private": true
+}
