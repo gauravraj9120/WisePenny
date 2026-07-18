@@ -86,30 +86,58 @@ SMTP_TO=user@example.com
 
 WisePenny is fully containerized and configured to run on Google Cloud Run in a single container.
 
-### Deploying using Google Cloud CLI
+### Complete Google Cloud CLI Setup & Deployment Options
 
-1. **Authenticate and configure project**:
-   ```bash
-   gcloud auth login
-   gcloud config set project <YOUR_PROJECT_ID>
-   ```
+Follow these steps to configure your GCP project and deploy using the **gcloud CLI**:
 
-2. **Submit build to Artifact Registry**:
-   Submit the source directory to Google Cloud Build, which compiles the frontend and packages it with the backend Express server into a Docker image:
-   ```bash
-   gcloud builds submit --tag gcr.io/<YOUR_PROJECT_ID>/wisepenny
-   ```
+#### 1. Authenticate and Configure Project
+Ensure you are logged in and configure the target Google Cloud project ID:
+```bash
+# Log in to your Google Account
+gcloud auth login
 
-3. **Deploy to Cloud Run**:
-   Launch the container image on Cloud Run (exposing port 8080):
-   ```bash
-   gcloud run deploy wisepenny \
-     --image gcr.io/<YOUR_PROJECT_ID>/wisepenny \
-     --platform managed \
-     --region us-central1 \
-     --allow-unauthenticated \
-     --set-env-vars GEMINI_API_KEY=your_gemini_api_key
-   ```
+# Set the active project for deployment
+gcloud config set project <YOUR_PROJECT_ID>
+```
+
+#### 2. Enable Required Google Cloud APIs
+Enable the Google Cloud Run, Cloud Build, and Artifact Registry service APIs for your project:
+```bash
+gcloud services enable run.googleapis.com \
+                       builds.googleapis.com \
+                       artifactregistry.googleapis.com
+```
+
+#### 3. Configure Default Deployment Settings
+Set standard default settings for region and platform management to simplify your commands:
+```bash
+gcloud config set run/region us-central1
+gcloud config set run/platform managed
+```
+
+#### 4. Create an Artifact Registry Repository (Recommended)
+Create a secure Docker repository in Artifact Registry to hold your container images (replacing legacy `gcr.io` registries):
+```bash
+gcloud artifacts repositories create wisepenny-repo \
+  --repository-format=docker \
+  --location=us-central1 \
+  --description="Docker repository for WisePenny"
+```
+
+#### 5. Submit Build to Artifact Registry
+Use Cloud Build to build the container using the root `Dockerfile` and store it in Artifact Registry:
+```bash
+gcloud builds submit --tag us-central1-docker.pkg.dev/<YOUR_PROJECT_ID>/wisepenny-repo/wisepenny:latest
+```
+
+#### 6. Deploy to Google Cloud Run
+Launch the container on Google Cloud Run, allowing public HTTP traffic:
+```bash
+gcloud run deploy wisepenny \
+  --image us-central1-docker.pkg.dev/<YOUR_PROJECT_ID>/wisepenny-repo/wisepenny:latest \
+  --allow-unauthenticated \
+  --set-env-vars GEMINI_API_KEY=your_gemini_api_key
+```
 
 ---
 
