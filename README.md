@@ -79,3 +79,34 @@ SMTP_TO=user@example.com
 
 4. **Open in Browser**:
    Navigate to **[http://localhost:5173](http://localhost:5173)** to access the dashboard.
+
+---
+
+## 🐳 Docker & Google Cloud Run Deployment
+
+WisePenny is fully containerized and configured to run on Google Cloud Run in a single container.
+
+### Deploying using Google Cloud CLI
+
+1. **Authenticate and configure project**:
+   ```bash
+   gcloud auth login
+   gcloud config set project <YOUR_PROJECT_ID>
+   ```
+
+2. **Submit build to Artifact Registry**:
+   Submit the source directory to Google Cloud Build, which compiles the frontend and packages it with the backend Express server into a Docker image:
+   ```bash
+   gcloud builds submit --tag gcr.io/<YOUR_PROJECT_ID>/wisepenny
+   ```
+
+3. **Deploy to Cloud Run**:
+   Launch the container image on Cloud Run (exposing port 8080):
+   ```bash
+   gcloud run deploy wisepenny \
+     --image gcr.io/<YOUR_PROJECT_ID>/wisepenny \
+     --platform managed \
+     --region us-central1 \
+     --allow-unauthenticated \
+     --set-env-vars GEMINI_API_KEY=your_gemini_api_key
+   ```

@@ -224,6 +224,19 @@ app.post('/api/scan-receipt', upload.single('receipt'), async (req, res) => {
   }
 });
 
+// Serve static frontend files in production/container
+const frontendDistPath = path.join(__dirname, '../frontend/dist');
+if (fs.existsSync(frontendDistPath)) {
+  console.log(`Backend: Serving static frontend from ${frontendDistPath}`);
+  app.use(express.static(frontendDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api')) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, 'index.html'));
+  });
+}
+
 // Start Express App
 app.listen(PORT, () => {
   console.log(`======================================================`);
