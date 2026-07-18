@@ -17,6 +17,33 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
+// API Key Authentication Middleware
+const apiAuthMiddleware = (req, res, next) => {
+  const apiKey = process.env.WISEPENNY_API_KEY;
+  if (!apiKey) {
+    return next(); // Bypass if no key is configured in environment
+  }
+
+  const providedKey = req.headers['x-api-key'];
+  if (providedKey === apiKey) {
+    return next();
+  }
+
+  // Allow same-origin browser fetches (for production)
+  const isSameOrigin = req.headers['sec-fetch-site'] === 'same-origin';
+  // Allow development local proxy (from Vite dev server on localhost:5173)
+  const isDevProxy = req.headers['referer'] && req.headers['referer'].includes('localhost:5173');
+
+  if (isSameOrigin || isDevProxy) {
+    return next();
+  }
+
+  return res.status(401).json({ error: 'Unauthorized: Invalid or missing x-api-key header.' });
+};
+
+// Apply middleware to API routes
+app.use('/api', apiAuthMiddleware);
+
 // Setup Multer for upload files
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {

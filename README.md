@@ -38,8 +38,11 @@ Create a `.env` file in the root directory. Use the structure below as a templat
 PORT=5000
 
 # Leave GEMINI_API_KEY empty to use the built-in smart regex classifier fallback.
-# For full AI-powered categorization and receipt details parsing, provide a Gemini API key:
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# (Optional) Set an API Key to secure external API access. 
+# Leave empty to run in open developer mode.
+WISEPENNY_API_KEY=your_custom_secure_api_key_here
 
 # SMTP Server Configurations (Ethereal test SMTP is used by default if these are not provided)
 SMTP_HOST=
@@ -49,6 +52,21 @@ SMTP_PASS=
 SMTP_FROM=wisepenny-alerts@example.com
 SMTP_TO=user@example.com
 ```
+
+---
+
+## 🔒 API Key Authentication
+
+When `WISEPENNY_API_KEY` is defined in the environment, all third-party external requests (e.g. from curl, external servers, scripts) to the backend API endpoints (`/api/*`) are secured. 
+
+To call the API from an external client, pass the key via the `x-api-key` header:
+
+```bash
+curl -X GET http://localhost:5000/api/expenses \
+  -H "x-api-key: your_custom_secure_api_key_here"
+```
+
+*Note: Requests originating from the native WisePenny React dashboard are automatically permitted without manual API key header configuration.*
 
 ---
 

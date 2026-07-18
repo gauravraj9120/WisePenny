@@ -9,6 +9,8 @@ services:
         value: 10000
       - key: GEMINI_API_KEY
         sync: false
+      - key: WISEPENNY_API_KEY
+        sync: false
       - key: SMTP_HOST
         sync: false
       - key: SMTP_PORT
