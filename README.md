@@ -110,3 +110,22 @@ WisePenny is fully containerized and configured to run on Google Cloud Run in a 
      --allow-unauthenticated \
      --set-env-vars GEMINI_API_KEY=your_gemini_api_key
    ```
+
+---
+
+## ☁️ Render Deployment
+
+WisePenny can be deployed to **Render** as a Web Service. The repository contains a `render.yaml` blueprint file, enabling automatic setup.
+
+### Deployment Steps
+
+1. **Sign in to Render**: Go to [Render Dashboard](https://dashboard.render.com).
+2. **Create a Blueprint Instance**:
+   - Click **New +** in the top right.
+   - Choose **Blueprint**.
+   - Connect your GitHub repository: `https://github.com/gauravraj9120/WisePenny.git`.
+3. **Deploy**:
+   - Render will parse `render.yaml` and configure the web service using the Docker environment automatically.
+   - Once deployment completes, your live web application URL will be displayed.
+4. **Environment Variables**:
+   - You can update `GEMINI_API_KEY` or SMTP credentials under the service's **Environment** tab in Render at any time.
